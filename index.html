@@ -1,0 +1,392 @@
+<!DOCTYPE html>
+
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>イベント持ち物チェックリスト</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+```
+    body {
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Hiragino Kaku Gothic ProN', sans-serif;
+        background: linear-gradient(135deg, #e0f2fe 0%, #e0e7ff 100%);
+        min-height: 100vh;
+        padding: 24px;
+    }
+
+    .container {
+        max-width: 800px;
+        margin: 0 auto;
+    }
+
+    .card {
+        background: white;
+        border-radius: 16px;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+        padding: 24px;
+        margin-bottom: 24px;
+    }
+
+    .header {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        margin-bottom: 24px;
+    }
+
+    .icon {
+        width: 32px;
+        height: 32px;
+        color: #4f46e5;
+    }
+
+    h1 {
+        font-size: 24px;
+        font-weight: bold;
+        color: #1f2937;
+    }
+
+    .progress-section {
+        margin-bottom: 24px;
+    }
+
+    .progress-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 8px;
+    }
+
+    .progress-label {
+        font-size: 14px;
+        font-weight: 500;
+        color: #4b5563;
+    }
+
+    .progress-count {
+        font-size: 14px;
+        font-weight: bold;
+        color: #4f46e5;
+    }
+
+    .progress-bar {
+        width: 100%;
+        height: 12px;
+        background: #e5e7eb;
+        border-radius: 9999px;
+        overflow: hidden;
+    }
+
+    .progress-fill {
+        height: 100%;
+        background: #4f46e5;
+        border-radius: 9999px;
+        transition: width 0.3s ease;
+    }
+
+    .items-list {
+        margin-bottom: 24px;
+    }
+
+    .item {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        padding: 16px;
+        margin-bottom: 8px;
+        border: 2px solid #e5e7eb;
+        border-radius: 8px;
+        background: white;
+        cursor: pointer;
+        transition: all 0.2s ease;
+    }
+
+    .item:hover {
+        border-color: #c7d2fe;
+    }
+
+    .item.checked {
+        background: #eef2ff;
+        border-color: #c7d2fe;
+    }
+
+    .checkbox {
+        width: 24px;
+        height: 24px;
+        flex-shrink: 0;
+    }
+
+    .checkbox-empty {
+        stroke: #9ca3af;
+        fill: none;
+    }
+
+    .checkbox-checked {
+        stroke: #4f46e5;
+        fill: #4f46e5;
+    }
+
+    .item-text {
+        font-weight: 500;
+        color: #1f2937;
+        text-align: left;
+        flex: 1;
+    }
+
+    .item.checked .item-text {
+        color: #6b7280;
+        text-decoration: line-through;
+    }
+
+    .buttons {
+        display: flex;
+        gap: 12px;
+    }
+
+    button {
+        padding: 12px 24px;
+        border: none;
+        border-radius: 8px;
+        font-size: 16px;
+        font-weight: bold;
+        cursor: pointer;
+        transition: all 0.2s ease;
+    }
+
+    .complete-btn {
+        flex: 1;
+        background: #4f46e5;
+        color: white;
+        box-shadow: 0 4px 6px rgba(79, 70, 229, 0.2);
+    }
+
+    .complete-btn:hover:not(:disabled) {
+        background: #4338ca;
+    }
+
+    .complete-btn:disabled {
+        background: #e5e7eb;
+        color: #9ca3af;
+        cursor: not-allowed;
+        box-shadow: none;
+    }
+
+    .reset-btn {
+        padding: 12px 24px;
+        background: #f3f4f6;
+        color: #374151;
+    }
+
+    .reset-btn:hover {
+        background: #e5e7eb;
+    }
+
+    .dialog-overlay {
+        display: none;
+        position: fixed;
+        inset: 0;
+        background: rgba(0, 0, 0, 0.5);
+        align-items: center;
+        justify-content: center;
+        padding: 16px;
+        z-index: 50;
+    }
+
+    .dialog-overlay.show {
+        display: flex;
+    }
+
+    .dialog {
+        background: white;
+        border-radius: 16px;
+        padding: 32px;
+        max-width: 400px;
+        width: 100%;
+        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+        text-align: center;
+        animation: bounce 0.5s ease;
+    }
+
+    @keyframes bounce {
+        0%, 100% { transform: translateY(0); }
+        50% { transform: translateY(-10px); }
+    }
+
+    .dialog-icon {
+        width: 64px;
+        height: 64px;
+        margin: 0 auto 16px;
+        color: #10b981;
+    }
+
+    .dialog h2 {
+        font-size: 32px;
+        font-weight: bold;
+        color: #1f2937;
+        margin-bottom: 16px;
+    }
+
+    .dialog p {
+        color: #6b7280;
+        margin-bottom: 24px;
+    }
+
+    .dialog-btn {
+        width: 100%;
+        background: #4f46e5;
+        color: white;
+    }
+
+    .dialog-btn:hover {
+        background: #4338ca;
+    }
+</style>
+```
+
+</head>
+<body>
+    <div class="container">
+        <div class="card">
+            <div class="header">
+                <svg class="icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"/>
+                </svg>
+                <h1>鬼南中持ち物チェック</h1>
+            </div>
+
+```
+        <div class="progress-section">
+            <div class="progress-header">
+                <span class="progress-label">進捗状況</span>
+                <span class="progress-count" id="progressCount">0 / 15</span>
+            </div>
+            <div class="progress-bar">
+                <div class="progress-fill" id="progressFill" style="width: 0%"></div>
+            </div>
+        </div>
+
+        <div class="items-list" id="itemsList"></div>
+
+        <div class="buttons">
+            <button class="complete-btn" id="completeBtn" disabled>完了</button>
+            <button class="reset-btn" id="resetBtn">リセット</button>
+        </div>
+    </div>
+</div>
+
+<div class="dialog-overlay" id="dialogOverlay">
+    <div class="dialog">
+        <svg class="dialog-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+        </svg>
+        <h2>忘れ物なし！</h2>
+        <p>すべての持ち物が揃いました</p>
+        <button class="dialog-btn" id="dialogBtn">OK</button>
+    </div>
+</div>
+
+<script>
+    const items = [
+        '黒タンクトップ',
+        '黒レギンス',
+        'なもさん:黒シャツ',
+        'なもさん:スカート',
+        '黒ベルト',
+        'なもさん:ハチマキ',
+        'なもさん:リストバンド',
+        '白足袋',
+        '足袋ソックス',
+        '白半纏',
+        '白タスキ',
+        '黒ライン',
+        '赤筆、赤練り',
+        '飲み物',
+        '乾燥対策:のど飴など'
+    ];
+
+    let checkedItems = {};
+
+    function renderItems() {
+        const itemsList = document.getElementById('itemsList');
+        itemsList.innerHTML = '';
+
+        items.forEach((item, index) => {
+            const div = document.createElement('div');
+            div.className = `item ${checkedItems[item] ? 'checked' : ''}`;
+            div.onclick = () => toggleItem(item);
+
+            const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+            svg.setAttribute('class', 'checkbox');
+            svg.setAttribute('fill', 'none');
+            svg.setAttribute('stroke', 'currentColor');
+            svg.setAttribute('viewBox', '0 0 24 24');
+
+            const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+            path.setAttribute('stroke-linecap', 'round');
+            path.setAttribute('stroke-linejoin', 'round');
+            path.setAttribute('stroke-width', '2');
+
+            if (checkedItems[item]) {
+                path.setAttribute('d', 'M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z');
+                path.setAttribute('class', 'checkbox-checked');
+            } else {
+                path.setAttribute('d', 'M12 22c5.523 0 10-4.477 10-10S17.523 2 12 2 2 6.477 2 12s4.477 10 10 10z');
+                path.setAttribute('class', 'checkbox-empty');
+            }
+
+            svg.appendChild(path);
+
+            const span = document.createElement('span');
+            span.className = 'item-text';
+            span.textContent = item;
+
+            div.appendChild(svg);
+            div.appendChild(span);
+            itemsList.appendChild(div);
+        });
+
+        updateProgress();
+    }
+
+    function toggleItem(item) {
+        checkedItems[item] = !checkedItems[item];
+        renderItems();
+    }
+
+    function updateProgress() {
+        const checkedCount = Object.values(checkedItems).filter(Boolean).length;
+        const total = items.length;
+        const percentage = (checkedCount / total) * 100;
+
+        document.getElementById('progressCount').textContent = `${checkedCount} / ${total}`;
+        document.getElementById('progressFill').style.width = `${percentage}%`;
+
+        const completeBtn = document.getElementById('completeBtn');
+        completeBtn.disabled = checkedCount !== total;
+    }
+
+    document.getElementById('completeBtn').onclick = () => {
+        document.getElementById('dialogOverlay').classList.add('show');
+    };
+
+    document.getElementById('resetBtn').onclick = () => {
+        checkedItems = {};
+        renderItems();
+    };
+
+    document.getElementById('dialogBtn').onclick = () => {
+        document.getElementById('dialogOverlay').classList.remove('show');
+    };
+
+    renderItems();
+</script>
+```
+
+</body>
+</html>
